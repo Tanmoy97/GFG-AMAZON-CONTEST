@@ -1,0 +1,158 @@
+Design a LRU cache. The class should have two methods get() and set() and a parameterised constructor defined as follows.
+
+get(key): Takes an integer "key" as input parameter and returns the value of the key if it exists in the cache otherwise returns -1.
+
+set(key, value) : Takes integers key and value as input parameter and inserts the value if the key is not already present in the cache. If the cache reaches its capacity it should invalidate the least recently used item before inserting the new item.
+
+LRUCache(cap): This is the parameterised constructor of the class. It should initialise the capacity of the cache.
+
+The designed cache is tested against Q multiple queries. Each query will either initiate a get() or set() operation. The values returned by the get operations are printed in the output. 
+ 
+
+Example 1:
+
+Input:
+Capacity = 2
+Q = 2
+Queries = SET 1 2 GET 1
+Output: 2
+Explanation: 
+SET 1 2 : 1 -> 2
+GET 1 : Print the value corresponding
+to Key 1, ie 2.
+
+Example 2:
+
+Input:
+Capacity = 2
+Q = 7
+Queries = 
+SET 1 2 
+SET 2 3 
+SET 1 5
+SET 4 5 
+SET 6 7 
+GET 4 
+GET 1
+Output: 5 -1
+Explanation: Cache Size = 2
+SET 1 2 : 1 -> 2
+SET 2 3 : 1 -> 2, 2 -> 3 (the most
+recently used one is kept at the
+rightmost position) 
+SET 1 5 : 2 -> 3, 1 -> 5
+SET 4 5 : 1 -> 5, 4 -> 5 (Cache size
+is 2, hence we delete the least
+recently used key-value pair)
+SET 6 7 : 4 -> 5, 6 -> 7 
+GET 4 : Prints 5
+GET 1 : No key-value pair having
+key = 1. Hence prints -1.
+
+Your Task:
+You don't need to read input or print anything. Complete the class LRUcache which has two methods get() and set() and a parameterised constructor. 
+
+
+Expected Time Complexity: O(1) for both get() and set().
+Expected Auxiliary Space: O(1) for both get() and set(). You may use extra space for cache storage and implementation purposes.
+
+
+Constraints:
+1 <= capacity <= 1000
+1 <= Q <= 100000
+1 <= key, value <= 1000
+
+Solution:
+
+struct Node {
+    int key;
+    int value;
+    Node *next, *pre;
+    Node(int key, int value) {
+        this->key = key;
+        this->value = value;
+        next = pre = NULL;
+    }
+};
+
+class LRUCache
+{
+private:
+    static unordered_map<int, Node *> hsmap;
+    static int capacity, count;
+    static Node *head, *tail;
+
+public:
+    LRUCache(int cap)
+    {
+        unordered_map<int, Node *> temp;
+        hsmap = temp;
+        capacity = cap;
+        head = new Node(0, 0);
+        tail = new Node(0, 0);
+        head->next = tail;
+        head->pre = NULL;
+        tail->next = NULL;
+        tail->pre = head;
+        count = 0;
+    }
+
+    static void addToHead(Node *node)
+    {
+        node->next = head->next;
+        node->next->pre = node;
+        node->pre = head;
+        head->next = node;
+    }
+
+    static void deleteNode(Node *node)
+    {
+        node->pre->next = node->next;
+        node->next->pre = node->pre;
+    }
+    
+    static int get(int key)
+    {
+        if (hsmap.count(key) > 0)
+        {
+            Node *node = hsmap[key];
+            int result = node->value;
+            deleteNode(node);
+            addToHead(node);
+            return result;
+        }
+        return -1;
+    }
+
+    static void set(int key, int value)
+    {
+        if (hsmap.count(key) > 0)
+        {
+            Node *node = hsmap[key];
+            node->value = value;
+            deleteNode(node);
+            addToHead(node);
+        }
+        else
+        {
+            Node *node = new Node(key, value);
+            hsmap[key] = node;
+            if (count < capacity) {
+                count++;
+                addToHead(node);
+            } else {
+                hsmap.erase(tail->pre->key);
+                deleteNode(tail->pre);
+                addToHead(node);
+            }
+        }
+    }
+};
+
+// Initializing static members
+unordered_map<int, Node *> temp;
+int LRUCache::capacity = 0;
+Node *LRUCache::head = new Node(0, 0);
+Node *LRUCache::tail = new Node(0, 0);
+int LRUCache::count = 0;
+unordered_map<int, Node *> LRUCache::hsmap = temp;
