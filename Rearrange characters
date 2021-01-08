@@ -1,0 +1,61 @@
+Given a string S, rearrange its characters such that no two adjacent characters are the same.
+
+ 
+
+Example 1:
+
+Input: S="geeksforgeeks"
+Output: 1
+Explanation:
+All the repeated characters of the given string 
+can be rearranged so that no adjacent characters 
+in the string are equal.
+ 
+
+Example 2:
+
+Input:
+S="bbbabaaacd"
+Output: 1
+ 
+
+Example 3:
+
+Input:
+S="bbbbb"
+Output: 0
+Explanation: 
+Repeated characters in the string cannot be 
+rearranged.
+
+Your Task: 
+You don't need to read input or print anything. Your task is to complete the function rearrangeString() which takes the string S as input parameter, and returns true if the generated string doesn't contains any same adjacent characters, else return false if no such string is possible.
+
+
+Constraints:
+1 <= length of string <= 104
+S contains only lowercase characters.
+
+Solution:
+
+class Solution
+{
+public:
+    bool rearrangeString(string S)
+    {
+    unordered_map<char, int> freq; 
+  
+    // To store the maximum frequency so far 
+    int max_freq = 0; 
+    for (int j = 0; j < (S.length()); j++) { 
+        freq[S[j]]++; 
+        if (freq[S[j]] > max_freq) 
+            max_freq = freq[S[j]]; 
+    } 
+  
+    // If possible 
+    if (max_freq <= (S.length() - max_freq + 1)) 
+        return true; 
+    return false; 
+    }
+};
