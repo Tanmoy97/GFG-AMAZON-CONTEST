@@ -1,0 +1,82 @@
+There are N floors in a building numbered from 1 to N. A person is standing at floor A and wants to go to floor B using a lift. In one step, the lift can either go x floors up and y floors down. Find the minimum number of steps required to reach from floor A to floor B.
+
+Note: the lift can only go to the floors from 1 to N.
+
+ 
+
+Example 1:
+
+Input:
+N=5
+A=3, B=2
+x=1, y=2
+Output:
+2
+Explanation:
+Current floor of the person is 3 (A=3)
+In first step ,lift can go x=1 floors up ,then 
+current floor will be 3+1=4 
+In second step ,lift can go y=2 floors down.then
+current floor will be 4-2 =2
+2 steps is required to reach the floor B
+ 
+
+Example 2:
+
+Input:
+N=3
+A=1, B=2 
+x=2, y=2
+Output:
+-1
+Explanation:
+There is no way to reach the floor B .
+
+Your Task: 
+You don't need to read input or print anything. Your task is to complete the function minSteps() which takes the N (total number of floors) ,A(current floor), B(target floor), x and y, and returns the minimum number of steps to reach the floor B. If it is not possible to reach the floor B then return -1.
+
+ 
+
+Expected Time Complexity: O(N)
+Expected Auxiliary Space: O(N)
+
+ 
+
+Constraints:
+1 ≤ N ≤ 105
+1 ≤ A,B,x,y ≤ N
+
+
+Solution:
+
+class Solution
+{
+public:
+    int minSteps(int N,int A,int B,int x,int y)
+    {
+
+        queue<int> q;
+        vector<int> steps(N+1,-1);
+
+        q.push(A);
+        steps[A]=0;
+
+        while(!q.empty())
+        {
+            int curFloor=q.front();
+            q.pop();
+            if(curFloor+x<=N&&steps[curFloor+x]==-1)
+            {
+                steps[curFloor+x]=1+steps[curFloor];
+                q.push(curFloor+x);
+            }
+            if(curFloor-y>=1&&steps[curFloor-y]==-1)
+            {
+                steps[curFloor-y]=1+steps[curFloor];
+                q.push(curFloor-y);
+            }
+        }
+
+        return steps[B];
+    }
+};
