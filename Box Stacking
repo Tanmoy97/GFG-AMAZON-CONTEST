@@ -1,0 +1,102 @@
+You are given a set of n types of rectangular 3-D boxes, where the ith box has height height[i], width weight[i] and length lenght[i]. You task is to create a stack of boxes which is as tall as possible. You can only stack a box on top of another box if the dimensions of the 2-D base of the lower box are each strictly larger than those of the 2-D base of the higher box. You can rotate a box so that any side functions as its base. It is also allowed to use multiple instances of the same type of box. 
+
+Note: Base of the lower box should be strictly larger than that of the new box we're going to place. A box can be placed on top of another box only if both width and depth of the upper placed box are smaller than width and depth of the lower box respectively. So, two boxes with same base cannot be placed one over the other.
+
+ 
+
+Example 1:
+
+Input:
+n = 4
+height[] = {4,1,4,10}
+width[] = {6,2,5,12}
+length[] = {7,3,6,32}
+Output: 60
+Explanation: One way of placing the boxes is
+as follows in the bottom to top manner:
+(Denoting the boxes in (l, w, h) manner)
+(12, 32, 10) (10, 12, 32) (6, 7, 4) (5, 6, 4)
+(4, 5, 6) (2, 3, 1) (1, 2, 3)
+Hence, the total height of this stack is
+10 + 32 + 4 + 4 + 6 + 1 + 3 = 60.
+No other combination of boxes produces a height
+greater than this.
+
+​Example 2:
+
+Input:
+n = 3
+height[] = {1,4,3}
+width[] = {2,5,4}
+length[] = {3,6,1}
+Output: 15
+ 
+
+Your Task:
+You don't need to read input or print anything. Your task is to complete the function maxHeight() which takes three arrays height[], width[], length[], and n as a number of boxes and returns the highest possible stack height which can be formed.
+
+
+Expected Time Complexity : O(n*n)
+Expected Auxiliary Space: O(n)
+
+
+Constraints:
+1 <= n <= 100
+1 <= length[i],weight[i],height[i] <= 100
+
+Solution:
+
+int max(int x, int y){
+    return x > y ? x : y;
+}
+int min(int x, int y){
+    return x < y ? x : y;
+}
+typedef struct box{
+    int d, w, h;
+} box;
+int compare(const void* a, const void* b){
+    return ( (*(box *)b).d * (*(box *)b).w ) -
+           ( (*(box *)a).d * (*(box *)a).w );
+}
+int maxHeight(int height[],int width[],int length[],int n)
+{
+    //Your code here
+    for(int i = 0; i < n; i++){
+        if(width[i] >= length[i]) swap(width[i], length[i]);
+    }
+    box bb[n * 3]; int idx = 0;
+    for(int i = 0; i < n; i++){
+        bb[idx].h = height[i]; 
+        bb[idx].w = width[i]; 
+        bb[idx].d = length[i];
+        idx++;
+        bb[idx].h = width[i];
+        bb[idx].d = max(height[i], length[i]);
+        bb[idx].w = min(height[i], length[i]);
+        
+        idx++;
+        bb[idx].h = length[i];
+        bb[idx].d = max(height[i], width[i]);
+        bb[idx].w = min(height[i], width[i]);
+        idx++;
+    }    
+    n *= 3;
+    qsort(bb, n, sizeof(bb[0]), compare);
+    int msh[n];
+    for(int i = 0; i < n; i++) msh[i] = bb[i].h;
+    for(int i = 1; i < n; i++){
+        for(int j = 0; j < i; j++){
+            if(bb[i].w < bb[j].w && bb[i].d < bb[j].d 
+                && msh[i] < msh[j] + bb[i].h){
+                    msh[i] = msh[j] + bb[i].h;
+                }
+        }
+    }
+    int rs = -1;
+    for(int i = 0; i < n; i++){
+        rs = max(rs, msh[i]);
+    }
+    return rs;
+    
+}
